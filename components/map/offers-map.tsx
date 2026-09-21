@@ -57,12 +57,7 @@ const scaleFor = (width: number) => width / (2 * Math.PI);
  * sur la configuration initiale — les deux couches se désalignaient.
  * Recentrage d3 canonique : `rotate` pour la longitude, `center` pour la latitude.
  */
-const makeProjection = (
-  width: number,
-  height: number,
-  center: [number, number],
-  zoom: number,
-) =>
+const makeProjection = (width: number, height: number, center: [number, number], zoom: number) =>
   geoEqualEarth()
     .scale(scaleFor(width) * zoom)
     .rotate([-center[0], 0, 0])
@@ -144,6 +139,8 @@ export function OffersMap({
     [width, boxHeight, view],
   );
   const max = Math.max(1, ...clusters.map((c) => c.offres.length));
+  // Marqueurs proportionnés au panneau : plus discrets dans une colonne étroite.
+  const markerScale = Math.min(1, Math.max(0.6, width / 960));
   const unlocated = offres.length - clusters.reduce((n, c) => n + c.offres.length, 0);
   const [activeKey, setActiveKey] = useState<string | null>(null);
   const [page, setPage] = useState(0);
@@ -169,7 +166,16 @@ export function OffersMap({
         height={boxHeight}
         style={{ width: "100%", height: "100%" }}
       >
-        <ZoomableGroup minZoom={1} maxZoom={6}>
+        {/* ZoomableGroup recentre sur son `center` (défaut [0,0]) : on lui
+            donne le centre de la vue pour que sa translation initiale soit
+            neutre ; la clé le remonte quand le cadrage change. */}
+        <ZoomableGroup
+          key={`${view.center[0].toFixed(3)},${view.center[1].toFixed(3)}`}
+          center={view.center}
+          zoom={1}
+          minZoom={1}
+          maxZoom={6}
+        >
           <Geographies geography={worldAtlas as unknown as string}>
             {({ geographies }) =>
               geographies.map((geo) => (
@@ -185,7 +191,7 @@ export function OffersMap({
             }
           </Geographies>
           {clusters.map((c) => {
-            const r = radiusFor(c.offres.length, max);
+            const r = radiusFor(c.offres.length, max) * markerScale;
             const isActive = c.key === activeKey || c.key === highlightedKey;
             const color = c.urgentes ? "#ff8b6b" : "#4cd8e8";
             return (
