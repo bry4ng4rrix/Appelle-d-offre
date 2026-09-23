@@ -909,17 +909,21 @@ a.full, button.full { width: 100%; }
   position: relative;
   overflow: hidden;
   border-radius: inherit;
-  /* Fond « océan » : l'espace autour des continents fait partie de la carte,
-     il ne se lit pas comme une zone vide. */
-  background:
-    radial-gradient(120% 90% at 50% 40%, color-mix(in srgb, #17304d 52%, transparent), transparent 70%),
-    linear-gradient(180deg, color-mix(in srgb, #0e1d31 88%, transparent), color-mix(in srgb, #0a1626 94%, transparent));
+  background: color-mix(in srgb, #0b1626 94%, transparent);
+  isolation: isolate;
 }
-.map-canvas svg { display: block; }
-.map-marker { cursor: pointer; }
-.map-marker .marker-node { transition: transform var(--d-2) var(--ease); transform-box: fill-box; transform-origin: center; }
-.map-marker:hover .marker-node { transform: scale(1.18); }
-.map-marker-count { fill: var(--accent-ink); font-weight: 700; pointer-events: none; font-family: var(--font-sans); }
+.map-canvas.map-loading { min-height: 240px; }
+.leaflet-host { position: absolute; inset: 0; }
+/* Vignettage : les tuiles se fondent dans le panneau au lieu de s'arrêter net. */
+.map-canvas::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 350;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow: inset 0 0 70px 6px color-mix(in srgb, var(--bg-deep) 58%, transparent);
+}
 
 .map-legend {
   display: flex;
@@ -1640,3 +1644,161 @@ a.full, button.full { width: 100%; }
 .icon-button { min-width: 36px; min-height: 36px; }
 .footer-site, .footer-address a { display: inline-flex; align-items: center; min-height: 32px; }
 .footer-col a { padding-block: 4px; margin-block: -4px; }
+
+/* ══════════════════════════════════════════════════════════════════════════
+   CARTE LEAFLET — tuiles OpenStreetMap / satellite, habillées aux tokens
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  background: color-mix(in srgb, #0b1626 94%, transparent);
+  font-family: var(--font-sans);
+  outline: none;
+}
+.leaflet-container a { color: var(--accent); }
+
+/* Rendu sombre obtenu par correction colorimétrique des tuiles OpenStreetMap
+   d'origine : inversion de luminance puis rotation de teinte, ce qui donne un
+   fond sombre lisible sans dépendre d'un service de tuiles à clé. */
+.tiles-sombre {
+  filter: invert(1) hue-rotate(190deg) brightness(.78) contrast(1.12) saturate(.42);
+}
+.tiles-brut { filter: brightness(.84) saturate(.92) contrast(1.02); }
+.tiles-labels { filter: brightness(1.14) contrast(1.08); opacity: .92; }
+.leaflet-tile-container img { will-change: auto; }
+
+/* Épingles : mêmes codes couleur que les badges d'échéance */
+.offer-pin-wrap { background: none; border: 0; }
+.offer-pin {
+  display: grid;
+  place-items: center;
+  width: var(--pin);
+  height: var(--pin);
+  border-radius: 50%;
+  color: var(--accent-ink);
+  background: var(--accent);
+  border: 2px solid color-mix(in srgb, #ffffff 82%, transparent);
+  box-shadow:
+    0 0 0 6px color-mix(in srgb, var(--accent) 18%, transparent),
+    var(--e-2);
+  transition: transform var(--d-2) var(--ease), box-shadow var(--d-2) var(--ease);
+  cursor: pointer;
+}
+.offer-pin.urgent {
+  background: var(--alert);
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--alert) 20%, transparent), var(--e-2);
+}
+.offer-pin b {
+  font-size: calc(var(--pin) * .42);
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.offer-pin-wrap:hover .offer-pin { transform: scale(1.12); }
+.offer-pin.active {
+  transform: scale(1.14);
+  box-shadow:
+    0 0 0 9px color-mix(in srgb, var(--accent) 22%, transparent),
+    var(--e-3);
+}
+.offer-pin.urgent.active { box-shadow: 0 0 0 9px color-mix(in srgb, var(--alert) 24%, transparent), var(--e-3); }
+.leaflet-marker-icon:focus-visible .offer-pin { outline: 2px solid var(--accent); outline-offset: 4px; }
+
+/* Sélecteur de fond de carte */
+.map-layers {
+  position: absolute;
+  top: var(--s-3);
+  left: var(--s-3);
+  z-index: 400;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s-1);
+  padding: var(--s-1) var(--s-2) var(--s-1) var(--s-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--bg-deep) 82%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: var(--e-2);
+  color: var(--text-4);
+}
+.map-layers button {
+  padding: var(--s-1) var(--s-3);
+  border-radius: var(--r-pill);
+  color: var(--text-3);
+  font-size: var(--t-label);
+  font-weight: 600;
+  letter-spacing: .04em;
+  transition: color var(--d-2) var(--ease), background var(--d-2) var(--ease);
+}
+.map-layers button:hover { color: var(--text-1); }
+.map-layers button.active {
+  color: var(--accent-ink);
+  background: linear-gradient(145deg, var(--accent-soft), var(--accent));
+}
+
+/* Invite discrète : la molette ne prend la main qu'après un clic */
+.map-hint {
+  position: absolute;
+  bottom: var(--s-3);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 400;
+  padding: var(--s-1) var(--s-3);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, var(--bg-deep) 78%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--text-4);
+  font-size: var(--t-label);
+  pointer-events: none;
+}
+
+/* Contrôles natifs de Leaflet alignés sur le système */
+.leaflet-control-zoom { border: 0 !important; box-shadow: var(--e-2) !important; margin: var(--s-3) !important; }
+.leaflet-top.leaflet-right { z-index: 400; }
+.leaflet-control-zoom a {
+  width: 30px;
+  height: 30px;
+  line-height: 29px;
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  background: color-mix(in srgb, var(--bg-deep) 84%, transparent);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: color var(--d-2) var(--ease), background var(--d-2) var(--ease);
+}
+.leaflet-control-zoom a:first-child { border-radius: var(--r-sm) var(--r-sm) 0 0; }
+.leaflet-control-zoom a:last-child { border-radius: 0 0 var(--r-sm) var(--r-sm); border-top: 0; }
+.leaflet-control-zoom a:hover { color: var(--text-1); background: color-mix(in srgb, #1b2c48 88%, transparent); }
+.leaflet-control-zoom a.leaflet-disabled { opacity: .4; }
+
+/* Attribution : obligatoire, donc lisible mais discrète */
+.leaflet-control-attribution {
+  padding: 2px var(--s-2) !important;
+  border-radius: var(--r-sm) 0 0 0;
+  background: color-mix(in srgb, var(--bg-deep) 78%, transparent) !important;
+  color: var(--text-4) !important;
+  font-size: 9.5px !important;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+.leaflet-control-attribution a { color: var(--text-3) !important; }
+.leaflet-control-attribution a:hover { color: var(--accent) !important; }
+
+/* La fiche d'aperçu reste au-dessus des couches Leaflet */
+.map-popover { z-index: 500; }
+.map-legend.overlay { z-index: 400; }
+
+@media (max-width: 680px) {
+  .map-layers { top: auto; bottom: var(--s-3); left: var(--s-3); padding-inline: var(--s-2); }
+  .map-layers button { padding-inline: var(--s-2); }
+  .map-legend.overlay { display: none; }
+  .map-hint { display: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .offer-pin, .offer-pin-wrap:hover .offer-pin { transition: none; transform: none; }
+}
