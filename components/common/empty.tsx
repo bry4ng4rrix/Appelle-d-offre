@@ -16,7 +16,7 @@ export function Empty({
   return (
     <div className="empty">
       <span className="empty-glyph" aria-hidden>
-        <SearchX size={22} />
+        <SearchX size={20} strokeWidth={1.5} />
       </span>
       <h3>{title}</h3>
       <p>{text}</p>

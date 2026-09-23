@@ -73,7 +73,7 @@ export function OfferDetail({ id }: { id: string }) {
 
           {expired && (
             <p className="notice danger">
-              <Info size={14} /> Cette offre est expirée : elle n’est plus ouverte aux réponses.
+              <Info size={15} /> Cette offre est expirée : elle n’est plus ouverte aux réponses.
             </p>
           )}
 
@@ -104,7 +104,7 @@ export function OfferDetail({ id }: { id: string }) {
             {offre.raison && (
               <>
                 <h3>Pourquoi cette offre a été retenue</h3>
-                <p className="veille-reason"><Info size={14} /> {offre.raison}</p>
+                <p className="veille-reason"><Info size={15} /> {offre.raison}</p>
               </>
             )}
           </Glass>
@@ -173,7 +173,7 @@ export function OfferDetail({ id }: { id: string }) {
             <h3>{labelSource(offre.source)}</h3>
             <p className="muted">{offre.localisation?.region_libelle ?? "Région inconnue"}</p>
             <Link href={`/offres?source=${encodeURIComponent(offre.source)}`} className="text-button">
-              Voir les offres de cette source <ArrowLeft size={14} style={{ transform: "rotate(180deg)" }} />
+              Voir les offres de cette source <ArrowLeft size={15} style={{ transform: "rotate(180deg)" }} />
             </Link>
           </Glass>
         </aside>

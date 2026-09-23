@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import type React from "react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { ChevronDown, ChevronLeft, ChevronRight, List, Map as MapIcon, RotateCcw, Search } from "lucide-react";
 import type { Nature, Offre, OffresFilters, Tri } from "@/lib/api-types";
@@ -149,7 +150,7 @@ export function OffersExplorer({ initialTab = "list", basePath = "/offres" }: { 
         action={
           !publicMode && activeCount > 0 ? (
             <button className="secondary" onClick={() => setFilters({ tri: filters.tri })}>
-              <RotateCcw size={14} aria-hidden /> Réinitialiser les filtres
+              <RotateCcw size={15} aria-hidden /> Réinitialiser les filtres
             </button>
           ) : undefined
         }
@@ -174,12 +175,16 @@ export function OffersExplorer({ initialTab = "list", basePath = "/offres" }: { 
                   : "Chargement…"}
           </p>
         </div>
-        <div className="view-tabs" role="tablist">
-          <button role="tab" aria-selected={tab === "list"} className={tab === "list" ? "active" : ""} onClick={() => setTab("list")}>
-            <List size={15} /> Liste
+        <div
+          className="segmented view-tabs"
+          role="tablist"
+          style={{ "--seg": 2, "--i": tab === "list" ? 0 : 1 } as React.CSSProperties}
+        >
+          <button role="tab" aria-selected={tab === "list"} onClick={() => setTab("list")}>
+            <List size={15} aria-hidden /> Liste
           </button>
-          <button role="tab" aria-selected={tab === "map"} className={tab === "map" ? "active" : ""} onClick={() => setTab("map")}>
-            <MapIcon size={15} /> Carte
+          <button role="tab" aria-selected={tab === "map"} onClick={() => setTab("map")}>
+            <MapIcon size={15} aria-hidden /> Carte
           </button>
         </div>
       </div>
@@ -196,7 +201,7 @@ export function OffersExplorer({ initialTab = "list", basePath = "/offres" }: { 
               <option value="marche">Marchés</option>
               <option value="emploi">Emplois</option>
             </select>
-            <ChevronDown size={14} />
+            <ChevronDown size={15} />
           </div>
           <div className="select-wrap">
             <select value={filters.secteur ?? ""} onChange={(e) => patch({ secteur: e.target.value || undefined })} aria-label="Catégorie">
@@ -205,7 +210,7 @@ export function OffersExplorer({ initialTab = "list", basePath = "/offres" }: { 
                 <option key={s.code} value={s.code}>{s.libelle} ({s.ouvertes})</option>
               ))}
             </select>
-            <ChevronDown size={14} />
+            <ChevronDown size={15} />
           </div>
           <div className="select-wrap">
             <select value={filters.region ?? ""} onChange={(e) => patch({ region: e.target.value || undefined })} aria-label="Région">
@@ -214,7 +219,7 @@ export function OffersExplorer({ initialTab = "list", basePath = "/offres" }: { 
                 <option key={r.code} value={r.code}>{r.libelle} ({r.ouvertes})</option>
               ))}
             </select>
-            <ChevronDown size={14} />
+            <ChevronDown size={15} />
           </div>
           <div className="select-wrap">
             <select value={filters.source ?? ""} onChange={(e) => patch({ source: e.target.value || undefined })} aria-label="Source">
@@ -223,7 +228,7 @@ export function OffersExplorer({ initialTab = "list", basePath = "/offres" }: { 
                 <option key={s.source} value={s.source}>{labelSource(s.source)} ({s.ouvertes})</option>
               ))}
             </select>
-            <ChevronDown size={14} />
+            <ChevronDown size={15} />
           </div>
           <div className="select-wrap">
             <select value={filters.urgence ?? 0} onChange={(e) => patch({ urgence: Number(e.target.value) || undefined })} aria-label="Échéance">
@@ -233,7 +238,7 @@ export function OffersExplorer({ initialTab = "list", basePath = "/offres" }: { 
               <option value={15}>≤ 15 jours</option>
               <option value={30}>≤ 30 jours</option>
             </select>
-            <ChevronDown size={14} />
+            <ChevronDown size={15} />
           </div>
           <div className="select-wrap">
             <select value={filters.tri ?? "echeance"} onChange={(e) => patch({ tri: e.target.value as Tri })} aria-label="Tri">
@@ -241,7 +246,7 @@ export function OffersExplorer({ initialTab = "list", basePath = "/offres" }: { 
                 <option key={t.value} value={t.value}>{t.label}</option>
               ))}
             </select>
-            <ChevronDown size={14} />
+            <ChevronDown size={15} />
           </div>
           <button className={filters.cloturees ? "filter-button active" : "filter-button"} onClick={() => patch({ cloturees: !filters.cloturees })} aria-pressed={!!filters.cloturees}>
             Inclure les expirées

@@ -35,7 +35,7 @@ export function LandingMap() {
           </p>
         </div>
         <Link href="/carte" className="map-total link">
-          <strong>{formatNumber(offres.length)}</strong> offres localisées <ArrowRight size={14} />
+          <strong>{formatNumber(offres.length)}</strong> offres localisées <ArrowRight size={15} />
         </Link>
       </div>
       <Glass className="world-map-card map-panel landing-map">

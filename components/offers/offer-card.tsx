@@ -60,23 +60,23 @@ export function OfferCard({
           <Link href={href}>{offre.titre}</Link>
         </h3>
         <p className="company">
-          <Building2 size={14} />
+          <Building2 size={15} />
           {offre.organisation ?? "Organisme non précisé"}
         </p>
         <div className="card-meta">
           <span>
-            <MapPin size={14} />
+            <MapPin size={15} />
             {offreLocation(offre)}
           </span>
           <span>
-            <CalendarDays size={14} />
+            <CalendarDays size={15} />
             {offre.date_limite ? formatDateLong(offre.date_limite) : "Sans date limite"}
           </span>
         </div>
         {!dense && (
           <div className="expiry-row">
             <span className={`expiry ${deadlineTone(days, offre.ouverte)}`}>
-              <Clock3 size={14} />
+              <Clock3 size={15} />
               {days === null ? "Sans échéance" : days < 0 ? "Expirée" : `Expire dans : ${days === 0 ? "aujourd’hui" : days === 1 ? "1 jour" : `${days} jours`}`}
             </span>
           </div>
@@ -92,7 +92,7 @@ export function OfferCard({
               </>
             ) : (
               <>
-                Voir les détails <ArrowRight size={14} />
+                Voir les détails <ArrowRight size={15} />
               </>
             )}
           </Link>

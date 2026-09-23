@@ -9,7 +9,7 @@ export function DataSourceBanner() {
   if (source !== "local") return null;
   return (
     <div className="data-banner" role="status">
-      <DatabaseZap size={14} />
+      <DatabaseZap size={15} />
       API injoignable — affichage du jeu de données local de démonstration.
     </div>
   );

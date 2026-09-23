@@ -23,11 +23,11 @@ export function LoginGate({
     <Glass className={variant === "modal" ? "auth-modal gate-modal" : "gate-card"}>
       {onClose && (
         <button className="modal-close" onClick={onClose} aria-label="Fermer">
-          <X size={18} />
+          <X size={17} />
         </button>
       )}
       <span className="gate-icon">
-        <Lock size={18} />
+        <Lock size={17} />
       </span>
       <span className="section-kicker">ACCÈS COMPLET</span>
       <h2>Découvrez toutes les opportunités</h2>

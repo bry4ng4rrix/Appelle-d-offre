@@ -76,7 +76,7 @@ export function SiteNavbar() {
               <UserRound size={15} /> Mon compte
             </Link>
             <button className="primary small" onClick={logout}>
-              <LogOut size={14} /> Déconnexion
+              <LogOut size={15} /> Déconnexion
             </button>
           </>
         ) : (
@@ -85,7 +85,7 @@ export function SiteNavbar() {
               Voir les offres
             </Link>
             <Link href="/connexion" className="primary small">
-              Se connecter <ArrowRight size={14} />
+              Se connecter <ArrowRight size={15} />
             </Link>
           </>
         )}

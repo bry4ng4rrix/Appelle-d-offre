@@ -37,7 +37,7 @@ export function ExpiringSection({ className = "" }: { className?: string }) {
       <div className="section-heading">
         <div>
           <span className="section-kicker">
-            <Clock3 size={12} /> À NE PAS MANQUER
+            <Clock3 size={13} /> À NE PAS MANQUER
           </span>
           <h2>Offres bientôt expirées</h2>
           <p>
@@ -46,11 +46,11 @@ export function ExpiringSection({ className = "" }: { className?: string }) {
         </div>
         {authenticated ? (
           <Link href="/offres" className="outline-button">
-            Toutes les offres <ArrowRight size={14} />
+            Toutes les offres <ArrowRight size={15} />
           </Link>
         ) : (
           <button className="outline-button" onClick={() => setGate(true)}>
-            Voir plus <ArrowRight size={14} />
+            Voir plus <ArrowRight size={15} />
           </button>
         )}
       </div>

@@ -62,7 +62,7 @@ export function LoginForm() {
 
   return (
     <Glass className="auth-modal login-card">
-      <span className="gate-icon">{signup ? <UserPlus size={18} /> : <LockKeyhole size={18} />}</span>
+      <span className="gate-icon">{signup ? <UserPlus size={17} /> : <LockKeyhole size={17} />}</span>
       <span className="section-kicker">{signup ? "CRÉER UN COMPTE" : "CONNEXION"}</span>
       <h2>{signup ? "Rejoignez la veille" : "Accédez à toutes les offres"}</h2>
       <p className="muted">

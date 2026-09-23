@@ -20,7 +20,7 @@ export function ErrorPanel({
   return (
     <Glass className="async-state error">
       <span className="state-icon alert" aria-hidden>
-        <AlertTriangle size={18} />
+        <AlertTriangle size={17} />
       </span>
       <div>
         <h3>Données indisponibles</h3>
@@ -28,7 +28,7 @@ export function ErrorPanel({
       </div>
       {onRetry && (
         <button className="secondary" onClick={onRetry}>
-          <RefreshCw size={14} aria-hidden /> Réessayer
+          <RefreshCw size={15} aria-hidden /> Réessayer
         </button>
       )}
     </Glass>

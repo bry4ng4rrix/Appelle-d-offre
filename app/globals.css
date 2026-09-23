@@ -67,10 +67,20 @@
   --s-5: 20px;  --s-6: 24px;  --s-8: 32px;  --s-10: 40px;
   --s-12: 48px; --s-16: 64px; --s-20: 80px; --s-24: 96px;
 
-  /* ─── Rayons : 5 paliers, rien d'autre ─────────────────────────────── */
-  --r-xs: 8px; --r-sm: 10px; --r-md: 14px; --r-lg: 18px; --r-xl: 26px;
+  /* ─── Rayons : coins généreux façon iOS (continuous corners) ────────── */
+  --r-xs: 10px; --r-sm: 12px; --r-md: 16px; --r-lg: 22px; --r-xl: 30px;
+  --r-sheet: 38px;
   --r-pill: 999px;
   --radius: var(--r-md);
+
+  /* ─── Matériaux translucides (recette iOS : flou + saturation) ──────── */
+  --mat-thin: blur(20px) saturate(180%);
+  --mat-regular: blur(30px) saturate(180%);
+  --mat-thick: blur(44px) saturate(190%);
+
+  /* ─── Hauteurs de contrôle : 44 px, la cible tactile iOS ────────────── */
+  --control-h: 44px;
+  --control-h-sm: 34px;
 
   /* ─── Élévations ───────────────────────────────────────────────────── */
   --e-1: 0 1px 2px rgba(2, 6, 14, .4);
@@ -97,6 +107,8 @@
   --d-4: 420ms;  /* entrée        */
   --ease: cubic-bezier(.22, .61, .36, 1);
   --ease-out: cubic-bezier(.16, 1, .3, 1);
+  /* Ressort iOS : léger dépassement à l'arrivée, jamais au retour. */
+  --spring: cubic-bezier(.34, 1.56, .64, 1);
 
   /* ─── Grille ───────────────────────────────────────────────────────── */
   --container: 1320px;
@@ -127,6 +139,17 @@ button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; background: none; border: 0; }
 a { color: inherit; }
 ::selection { background: color-mix(in srgb, var(--accent) 30%, transparent); }
+
+/* Icônes : trait affiné (lucide dessine à 2 par défaut, trop épais à ces
+   tailles) et extrémités arrondies — le rendu se rapproche de SF Symbols. */
+.lucide {
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: none;
+}
+/* Sous 14 px, un trait un peu plus marqué reste lisible. */
+.lucide[width="13"], .lucide[width="12"] { stroke-width: 1.75; }
 
 /* Anneau de focus unique, visible au clavier uniquement */
 :focus-visible {
@@ -264,8 +287,8 @@ p { margin: 0; }
 .modal-backdrop > div > .glass,
 .map-popover {
   background: var(--surface-3);
-  backdrop-filter: blur(20px) saturate(140%);
-  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  backdrop-filter: var(--mat-thin);
+  -webkit-backdrop-filter: var(--mat-thin);
   box-shadow: var(--e-4), var(--inner-light);
 }
 
@@ -286,8 +309,8 @@ p { margin: 0; }
   padding-inline: max(var(--gutter), calc((100% - var(--container)) / 2 + var(--gutter)));
   border-bottom: 1px solid var(--hairline);
   background: color-mix(in srgb, var(--bg-deep) 72%, transparent);
-  backdrop-filter: blur(22px) saturate(160%);
-  -webkit-backdrop-filter: blur(22px) saturate(160%);
+  backdrop-filter: var(--mat-regular);
+  -webkit-backdrop-filter: var(--mat-regular);
   transition: border-color var(--d-3) var(--ease);
 }
 
@@ -384,8 +407,10 @@ p { margin: 0; }
   font-weight: 600;
   text-decoration: none;
   white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
   transition:
-    transform var(--d-1) var(--ease),
+    transform var(--d-3) var(--spring),
+    filter var(--d-2) var(--ease),
     box-shadow var(--d-2) var(--ease),
     background var(--d-2) var(--ease),
     border-color var(--d-2) var(--ease),
@@ -393,10 +418,13 @@ p { margin: 0; }
 }
 
 .primary, .secondary, .outline-button, .filter-button {
-  padding: var(--s-3) var(--s-5);
+  min-height: var(--control-h);
+  padding: var(--s-3) var(--s-6);
   border: 1px solid transparent;
-  border-radius: var(--r-sm);
+  border-radius: var(--r-pill);
   font-size: var(--t-sm);
+  font-weight: 600;
+  letter-spacing: -.005em;
 }
 
 /* Primaire — action unique de la vue */
@@ -407,11 +435,12 @@ p { margin: 0; }
   box-shadow: var(--glow-accent), var(--inner-light);
 }
 .primary:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: 0 14px 38px -10px color-mix(in srgb, var(--accent) 58%, transparent), var(--inner-light);
+  filter: brightness(1.06);
+  box-shadow: 0 12px 34px -10px color-mix(in srgb, var(--accent) 56%, transparent), var(--inner-light);
 }
-.primary:active:not(:disabled) { transform: translateY(0) scale(.985); }
-.primary.small { padding: var(--s-2) var(--s-4); font-size: var(--t-xs); }
+/* Pression : l'élément s'enfonce puis revient avec un léger ressort. */
+.primary:active:not(:disabled) { transform: scale(.955); transition-duration: var(--d-1); }
+.primary.small { min-height: var(--control-h-sm); padding: var(--s-2) var(--s-4); font-size: var(--t-xs); }
 
 /* Secondaire — alternative de même rang */
 .secondary, .outline-button, .filter-button {
@@ -424,11 +453,12 @@ p { margin: 0; }
 .outline-button:hover,
 .filter-button:hover {
   color: var(--text-1);
-  border-color: var(--border-accent);
-  background: color-mix(in srgb, #1b2c48 68%, transparent);
-  transform: translateY(-1px);
+  border-color: var(--border-strong);
+  background: color-mix(in srgb, #1b2c48 78%, transparent);
 }
-.secondary:active:not(:disabled) { transform: translateY(0) scale(.985); }
+.secondary:active:not(:disabled),
+.outline-button:active,
+.filter-button:active { transform: scale(.955); transition-duration: var(--d-1); }
 
 /* Fantôme — action tertiaire en ligne */
 .text-button {
@@ -458,11 +488,20 @@ p { margin: 0; }
 
 /* Désactivé — clairement identifiable */
 .primary:disabled, .secondary:disabled, button:disabled, .filter-button:disabled {
-  opacity: .42;
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
+  filter: none;
 }
+/* Un bouton désactivé ne garde pas la couleur d'accent : il devient neutre,
+   sans quoi il se lit comme une action disponible mais éteinte. */
+.primary:disabled {
+  color: var(--text-4);
+  background: color-mix(in srgb, #1b2c48 55%, transparent);
+  border-color: var(--hairline);
+}
+.secondary:disabled, .filter-button:disabled { opacity: .45; }
+.icon-button:disabled { opacity: .3; }
 
 .icon-button {
   display: inline-grid;
@@ -1014,26 +1053,56 @@ a.full, button.full { width: 100%; }
 .explorer-heading { margin-bottom: var(--s-6); }
 .explorer-heading h2 { margin: var(--s-2) 0 var(--s-1); }
 
-.view-tabs {
-  display: none;
-  gap: var(--s-1);
-  padding: var(--s-1);
-  border: 1px solid var(--border);
-  border-radius: var(--r-md);
-  background: color-mix(in srgb, #0b1424 62%, transparent);
+/* Contrôle segmenté : un pouce glisse sous l'onglet actif, comme sur iOS.
+   `--seg` = nombre de segments, `--i` = index actif (posés par le composant). */
+.segmented {
+  position: relative;
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 0;
+  padding: 3px;
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-pill);
+  background: color-mix(in srgb, #060b14 58%, transparent);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, .35);
+  isolation: isolate;
 }
-.view-tabs button {
+.segmented::before {
+  content: '';
+  position: absolute;
+  z-index: 0;
+  top: 3px;
+  bottom: 3px;
+  left: 3px;
+  width: calc((100% - 6px) / var(--seg, 3));
+  border-radius: var(--r-pill);
+  background: linear-gradient(180deg, color-mix(in srgb, #24384f 94%, transparent), color-mix(in srgb, #1a2b40 94%, transparent));
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .4), inset 0 1px 0 color-mix(in srgb, #ffffff 9%, transparent);
+  transform: translateX(calc(var(--i, 0) * 100%));
+  transition: transform var(--d-3) var(--spring);
+}
+.segmented button {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: var(--s-2);
-  padding: var(--s-2) var(--s-4);
-  border-radius: var(--r-sm);
+  height: var(--control-h-sm);
+  padding-inline: var(--s-4);
+  border-radius: var(--r-pill);
   color: var(--text-3);
   font-size: var(--t-xs);
   font-weight: 600;
-  transition: color var(--d-2) var(--ease), background var(--d-2) var(--ease);
+  white-space: nowrap;
+  transition: color var(--d-2) var(--ease), transform var(--d-1) var(--ease);
 }
-.view-tabs button.active { color: var(--accent-ink); background: linear-gradient(145deg, var(--accent-soft), var(--accent)); }
+.segmented button:hover { color: var(--text-2); }
+.segmented button[aria-pressed="true"], .segmented button[aria-selected="true"] { color: var(--text-1); }
+.segmented button:active { transform: scale(.96); }
+
+.view-tabs { display: none; }
 
 /* Barre de filtres */
 .filter-bar {
@@ -1043,15 +1112,15 @@ a.full, button.full { width: 100%; }
   margin-bottom: var(--s-6);
 }
 .filter-bar .search-box { grid-column: 1 / -1; }
-.filter-bar .select-wrap, .filter-bar .filter-button { height: 42px; }
-.filter-bar .filter-button { padding-inline: var(--s-3); font-size: var(--t-xs); }
+.filter-bar .select-wrap, .filter-bar .filter-button { height: var(--control-h); min-height: 0; }
+.filter-bar .filter-button { padding-inline: var(--s-4); font-size: var(--t-xs); }
 
 /* Champs : états default / hover / focus / error */
 .search-box {
   display: flex;
   align-items: center;
   gap: var(--s-3);
-  height: 46px;
+  height: var(--control-h);
   padding-inline: var(--s-4);
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
@@ -1290,7 +1359,7 @@ a.full, button.full { width: 100%; }
 
 .login-card input {
   width: 100%;
-  min-height: 46px;
+  min-height: var(--control-h);
   padding: var(--s-3) var(--s-4);
   border: 1px solid var(--border);
   border-radius: var(--r-sm);
@@ -1718,32 +1787,12 @@ a.full, button.full { width: 100%; }
   top: var(--s-3);
   left: var(--s-3);
   z-index: 400;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--s-1);
-  padding: var(--s-1) var(--s-2) var(--s-1) var(--s-3);
-  border: 1px solid var(--border);
-  border-radius: var(--r-pill);
-  background: color-mix(in srgb, var(--bg-deep) 82%, transparent);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  box-shadow: var(--e-2);
-  color: var(--text-4);
+  background: color-mix(in srgb, var(--bg-deep) 62%, transparent);
+  backdrop-filter: var(--mat-thin);
+  -webkit-backdrop-filter: var(--mat-thin);
+  box-shadow: var(--e-2), inset 0 1px 2px rgba(0, 0, 0, .3);
 }
-.map-layers button {
-  padding: var(--s-1) var(--s-3);
-  border-radius: var(--r-pill);
-  color: var(--text-3);
-  font-size: var(--t-label);
-  font-weight: 600;
-  letter-spacing: .04em;
-  transition: color var(--d-2) var(--ease), background var(--d-2) var(--ease);
-}
-.map-layers button:hover { color: var(--text-1); }
-.map-layers button.active {
-  color: var(--accent-ink);
-  background: linear-gradient(145deg, var(--accent-soft), var(--accent));
-}
+.map-layers button { height: 30px; padding-inline: var(--s-3); font-size: var(--t-label); letter-spacing: .03em; }
 
 /* Invite discrète : la molette ne prend la main qu'après un clic */
 .map-hint {
@@ -1764,12 +1813,16 @@ a.full, button.full { width: 100%; }
 }
 
 /* Contrôles natifs de Leaflet alignés sur le système */
-.leaflet-control-zoom { border: 0 !important; box-shadow: var(--e-2) !important; margin: var(--s-3) !important; }
+.leaflet-container .leaflet-control-zoom { border: 0 !important; box-shadow: var(--e-2) !important; margin: var(--s-3) !important; }
 .leaflet-top.leaflet-right { z-index: 400; }
-.leaflet-control-zoom a {
-  width: 30px;
-  height: 30px;
-  line-height: 29px;
+/* Leaflet cible `.leaflet-touch .leaflet-bar a` et `.leaflet-bar a.leaflet-disabled`
+   (2 classes + 1 type) et sa feuille est injectée après la nôtre : il faut
+   3 classes pour reprendre la main, y compris sur l'état désactivé. */
+.leaflet-container .leaflet-control-zoom a.leaflet-control-zoom-in,
+.leaflet-container .leaflet-control-zoom a.leaflet-control-zoom-out {
+  width: 34px;
+  height: 34px;
+  line-height: 33px;
   border: 1px solid var(--border);
   color: var(--text-2);
   background: color-mix(in srgb, var(--bg-deep) 84%, transparent);
@@ -1777,10 +1830,16 @@ a.full, button.full { width: 100%; }
   -webkit-backdrop-filter: blur(12px);
   transition: color var(--d-2) var(--ease), background var(--d-2) var(--ease);
 }
-.leaflet-control-zoom a:first-child { border-radius: var(--r-sm) var(--r-sm) 0 0; }
-.leaflet-control-zoom a:last-child { border-radius: 0 0 var(--r-sm) var(--r-sm); border-top: 0; }
-.leaflet-control-zoom a:hover { color: var(--text-1); background: color-mix(in srgb, #1b2c48 88%, transparent); }
-.leaflet-control-zoom a.leaflet-disabled { opacity: .4; }
+.leaflet-container .leaflet-control-zoom a:first-child { border-radius: var(--r-sm) var(--r-sm) 0 0; }
+.leaflet-container .leaflet-control-zoom a:last-child { border-radius: 0 0 var(--r-sm) var(--r-sm); border-top: 0; }
+.leaflet-container .leaflet-control-zoom a:hover { color: var(--text-1); background: color-mix(in srgb, #1b2c48 92%, transparent); }
+.leaflet-container .leaflet-control-zoom a.leaflet-disabled {
+  color: var(--text-4);
+  background: color-mix(in srgb, var(--bg-deep) 84%, transparent);
+  opacity: .45;
+  cursor: default;
+}
+.leaflet-container .leaflet-control-attribution { background: color-mix(in srgb, var(--bg-deep) 72%, transparent) !important; }
 
 /* Attribution : obligatoire, donc lisible mais discrète */
 .leaflet-control-attribution {
@@ -1823,4 +1882,132 @@ a.full, button.full { width: 100%; }
 
 @media (prefers-reduced-motion: reduce) {
   .offer-pin, .offer-pin-wrap:hover .offer-pin { transition: none; transform: none; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   MOTIFS iOS — listes groupées, pastilles d'icônes, feuilles de bas d'écran
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Liste groupée « Réglages » : rangées dans un bloc arrondi, séparateurs
+   décalés à gauche pour s'aligner sous le libellé, pas sous le bord. */
+.criteria-list {
+  display: grid;
+  margin: var(--s-4) 0 var(--s-5);
+  padding-inline: var(--s-4);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-md);
+  background: color-mix(in srgb, #0d1728 52%, transparent);
+  overflow: hidden;
+}
+.criteria-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-4);
+  min-height: var(--control-h);
+  padding-block: var(--s-3);
+  border-bottom: 1px solid var(--hairline);
+  color: var(--text-3);
+  font-size: var(--t-sm);
+}
+.criteria-line:last-child { border-bottom: 0; }
+.criteria-line > span:first-child { flex: none; }
+.criteria-line strong { text-align: right; color: var(--text-1); font-weight: 500; }
+.criteria-line code { color: var(--accent); font-family: var(--font-mono); font-size: var(--t-xs); }
+
+/* Pastille d'icône : carré arrondi teinté, le repère visuel des réglages iOS */
+.icon-tile, .gate-icon, .empty-glyph, .state-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  border-radius: var(--r-sm);
+  border: 1px solid transparent;
+  box-shadow: var(--inner-light);
+}
+.gate-icon {
+  width: 52px; height: 52px;
+  margin: 0 auto var(--s-5);
+  border-radius: var(--r-md);
+  color: var(--accent-ink);
+  background: linear-gradient(180deg, var(--accent-soft), var(--accent));
+  border-color: transparent;
+  box-shadow: var(--glow-accent), inset 0 1px 0 color-mix(in srgb, #ffffff 40%, transparent);
+}
+.empty-glyph {
+  width: 56px; height: 56px;
+  border-radius: var(--r-md);
+  border-color: var(--border);
+  background: color-mix(in srgb, #1b2c48 62%, transparent);
+}
+.state-icon { width: 40px; height: 40px; }
+
+/* Barre de navigation : hairline iOS (0.5 px perçu) et matériau épais */
+.topbar { border-bottom-width: 0; box-shadow: inset 0 -0.5px 0 var(--hairline); }
+.topbar.scrolled { box-shadow: inset 0 -0.5px 0 var(--border), var(--e-2); }
+
+/* Cartes : coins plus généreux, pression tactile */
+.tender-card { border-radius: var(--r-lg); }
+.tender-card:active { transform: scale(.992); }
+
+/* ── Feuilles de bas d'écran (mobile) ─────────────────────────────────── */
+@media (max-width: 680px) {
+  .modal-backdrop {
+    align-items: end;
+    place-items: end stretch;
+    padding: 0;
+  }
+  .modal-backdrop > div { animation: sheetIn var(--d-4) var(--ease-out); }
+  @keyframes sheetIn { from { transform: translateY(100%); } }
+
+  .gate-modal, .modal-backdrop .login-card {
+    width: 100%;
+    border-radius: var(--r-sheet) var(--r-sheet) 0 0;
+    border-bottom: 0;
+    padding: var(--s-10) var(--s-5) calc(var(--s-8) + env(safe-area-inset-bottom));
+  }
+  /* Poignée : le signal qu'une feuille se referme en la tirant vers le bas. */
+  .gate-modal::before, .modal-backdrop .login-card::before {
+    content: '';
+    position: absolute;
+    top: var(--s-3);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 5px;
+    border-radius: var(--r-pill);
+    background: color-mix(in srgb, #9fbee7 26%, transparent);
+  }
+  .gate-modal .modal-close, .modal-backdrop .login-card .modal-close { top: var(--s-5); }
+
+  /* L'aperçu de la carte devient lui aussi une feuille */
+  .map-popover {
+    left: 0; right: 0; bottom: 0;
+    width: auto;
+    max-height: 70%;
+    border-radius: var(--r-sheet) var(--r-sheet) 0 0;
+    border-bottom: 0;
+    padding: var(--s-8) var(--s-5) var(--s-5);
+    animation: sheetIn var(--d-3) var(--ease-out);
+  }
+  .map-popover::before {
+    content: '';
+    position: absolute;
+    top: var(--s-3);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 5px;
+    border-radius: var(--r-pill);
+    background: color-mix(in srgb, #9fbee7 26%, transparent);
+  }
+
+  /* Boutons pleine largeur, comme les actions iOS en bas de feuille */
+  .gate-actions a, .gate-actions button { min-height: var(--control-h); }
+  .segmented { width: 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .segmented::before { transition: none; }
+  .modal-backdrop > div, .map-popover { animation: none; }
+  .primary:active, .secondary:active, .tender-card:active { transform: none; }
 }

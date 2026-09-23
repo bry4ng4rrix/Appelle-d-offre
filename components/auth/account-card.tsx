@@ -24,7 +24,7 @@ export function AccountCard() {
 
   return (
     <Glass className="auth-modal login-card">
-      <span className="gate-icon"><UserRound size={18} /></span>
+      <span className="gate-icon"><UserRound size={17} /></span>
       <span className="section-kicker">MON COMPTE</span>
       <h2>{session?.name || session?.subject}</h2>
       <p className="muted">

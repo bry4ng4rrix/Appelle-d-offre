@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowRight,
@@ -8,7 +9,6 @@ import {
   CalendarDays,
   ChevronLeft,
   ChevronRight,
-  Layers as LayersIcon,
   MapPin,
   X,
 } from "lucide-react";
@@ -279,13 +279,21 @@ export default function OffersMapImpl({
     <div className={fill ? "map-canvas fill" : "map-canvas"} style={fill ? undefined : { height }}>
       <div ref={boxRef} className="leaflet-host" />
 
-      <div className="map-layers" role="group" aria-label="Fond de carte">
-        <LayersIcon size={13} aria-hidden />
+      <div
+        className="segmented map-layers"
+        role="group"
+        aria-label="Fond de carte"
+        style={
+          {
+            "--seg": LAYER_ORDER.length,
+            "--i": LAYER_ORDER.indexOf(layer),
+          } as React.CSSProperties
+        }
+      >
         {LAYER_ORDER.map((id) => (
           <button
             key={id}
             type="button"
-            className={layer === id ? "active" : ""}
             onClick={() => chooseLayer(id)}
             aria-pressed={layer === id}
             title={TILE_LAYERS[id].hint}
@@ -314,7 +322,7 @@ export default function OffersMapImpl({
           </button>
           <span className="eyebrow">
             <i className="category-dot" />
-            <MapPin size={12} /> {active.lieu}
+            <MapPin size={13} /> {active.lieu}
           </span>
           <p className="map-count">
             {active.offres.length} offre{active.offres.length > 1 ? "s" : ""}
@@ -331,10 +339,10 @@ export default function OffersMapImpl({
                 <div className="map-preview" key={o.id}>
                   <strong title={o.titre}>{o.titre}</strong>
                   <small>
-                    <Building2 size={11} /> {o.organisation ?? "Organisme non précisé"} · {labelSecteur(o.secteur)}
+                    <Building2 size={13} /> {o.organisation ?? "Organisme non précisé"} · {labelSecteur(o.secteur)}
                   </small>
                   <small>
-                    <CalendarDays size={11} /> {o.date_limite ? formatDateLong(o.date_limite) : "Sans date limite"}
+                    <CalendarDays size={13} /> {o.date_limite ? formatDateLong(o.date_limite) : "Sans date limite"}
                   </small>
                   <div className="map-preview-foot">
                     <Badge label={expiryLabel(days)} tone={deadlineTone(days, o.ouverte)} />

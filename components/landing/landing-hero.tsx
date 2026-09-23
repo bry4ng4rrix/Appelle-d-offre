@@ -31,7 +31,7 @@ export function LandingHero() {
         </p>
         <div className="hero-actions">
           <Link href="/offres" className="primary">
-            Voir les offres <ArrowRight size={16} />
+            Voir les offres <ArrowRight size={17} />
           </Link>
           {authenticated ? (
             <Link href="/carte" className="secondary">Explorer la carte</Link>
