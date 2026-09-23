@@ -3,7 +3,7 @@ import { SiteShell } from "@/components/site/site-shell";
 import { OffersExplorer } from "@/components/offers/offers-explorer";
 import { Loading } from "@/components/common/async-state";
 
-export const metadata = { title: "Appels d’offres — AppelPro" };
+export const metadata = { title: "Appels d’offres — Appel d’offre" };
 
 export default function OffresPage() {
   return (

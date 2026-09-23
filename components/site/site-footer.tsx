@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Image from "next/image";
-import { LabelTechnologyMark } from "./label-technology-mark";
 
 const SITE = "https://labeltechnology.mg";
 
@@ -44,7 +43,8 @@ export function SiteFooter() {
               src="/logo.png"
               alt="Label Technology"
               width={150}
-              height={50}
+              height={100}
+              className="footer-mark"
             />
           </a>
           <p className="footer-tagline">

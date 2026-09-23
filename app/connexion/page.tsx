@@ -3,7 +3,7 @@ import { SiteShell } from "@/components/site/site-shell";
 import { LoginForm } from "@/components/auth/login-form";
 import { Loading } from "@/components/common/async-state";
 
-export const metadata = { title: "Connexion — AppelPro" };
+export const metadata = { title: "Connexion — Appel d’offre" };
 
 export default function ConnexionPage() {
   return (

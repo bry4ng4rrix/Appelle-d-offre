@@ -3,7 +3,7 @@ import { SiteShell } from "@/components/site/site-shell";
 import { OffersExplorer } from "@/components/offers/offers-explorer";
 import { Loading } from "@/components/common/async-state";
 
-export const metadata = { title: "Carte des offres — AppelPro" };
+export const metadata = { title: "Carte des offres — Appel d’offre" };
 
 export default function CartePage() {
   return (

@@ -1,7 +1,7 @@
 import { SiteShell } from "@/components/site/site-shell";
 import { AccountCard } from "@/components/auth/account-card";
 
-export const metadata = { title: "Mon compte — AppelPro" };
+export const metadata = { title: "Mon compte — Appel d’offre" };
 
 export default function ComptePage() {
   return (

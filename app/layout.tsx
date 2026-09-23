@@ -18,9 +18,9 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'AppelPro — Les bonnes opportunités. Les bons partenaires.',
+  title: 'Appel d’offre — Les bonnes opportunités. Au bon moment.',
   description: "Découvrez rapidement les appels d’offres disponibles, leurs échéances et leur localisation.",
-  generator: "AppelPro",
+  generator: 'Appel d’offre',
   icons: {
     icon: [
       {

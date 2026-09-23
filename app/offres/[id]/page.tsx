@@ -1,7 +1,7 @@
 import { SiteShell } from "@/components/site/site-shell";
 import { OfferDetail } from "@/components/offers/offer-detail";
 
-export const metadata = { title: "Détail de l’offre — AppelPro" };
+export const metadata = { title: "Détail de l’offre — Appel d’offre" };
 
 export default async function OffreDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
